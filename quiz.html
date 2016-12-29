@@ -1,0 +1,77 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+
+<title>三択クイズ</title>
+</head>
+<body>
+<h1>三択クイズ</h1>
+<hr>
+<h2>問題</h2>
+<div id="text_q"></div>
+<h2>選択</h2>
+<div id="text_s"></div>
+<h2>解答</h2>
+<div id="text_a"></div>
+
+<script type="text/javascript">
+var count = 0; //問題数を数える    
+var sen = 4;//選択肢の数    
+var result = [];// 最終的な二次元配列を入れるための配列
+    
+//CSVファイルを読み込む関数getCSV()の定義
+function getCSV(){
+    var req = new XMLHttpRequest(); // HTTPでファイルを読み込むためのXMLHttpRrequestオブジェクトを生成
+    req.open("get", "jukugo.csv", true); // アクセスするファイルを指定
+    req.send(null); // HTTPリクエストの発行
+	
+    // レスポンスが返ってきたらconvertCSVtoArray()を呼ぶ	
+    req.onload = function(){
+	convertCSVtoArray(req.responseText); // 渡されるのは読み込んだCSVデータ
+    }
+}
+ 
+// 読み込んだCSVデータを二次元配列に変換する関数convertCSVtoArray()の定義
+function convertCSVtoArray(str){ // 読み込んだCSVデータが文字列として渡される
+    var tmp = str.split("\n"); // 改行を区切り文字として行を要素とした配列を生成
+    // 各行ごとにカンマで区切った文字列を要素とした二次元配列を生成
+    for(var i=0;i<tmp.length;++i){
+        result[i] = tmp[i].split(',');
+    }
+
+    var rand = 	Math.floor(Math.random() * 100); //ランダムな数値。問題選び用
+
+//問題
+	document.getElementById("text_q").innerHTML =  result[rand][1] + "の意味は？";
+    
+//選択肢
+var s,n;
+    var senrand = Math.floor(Math.random() * sen); //正解を何番目の選択肢に置くかを決める
+s = "";
+	for (n=1;n<=sen;n++) {
+        if(n == senrand){　
+		s += "【<a href=''>" + n + "：" + result[rand][2] + "</a>】" ;
+        } else{
+        var rantemp = Math.floor(Math.random() * 200); //間違っている答えを表示するための乱数。ここで範囲を絞れる
+        s += "【<a href=''>" + n + "：" + result[rantemp][2] + "</a>】" ;
+        }
+	}
+	document.getElementById("text_s").innerHTML = s;
+  //alert(result[1][2]); // 300yen
+}
+ 
+getCSV(); //最初に実行される
+
+
+//quiz();
+    
+//問題表示
+function quiz() {
+
+}
+    
+    
+</script>
+</body>
+</html>
+
