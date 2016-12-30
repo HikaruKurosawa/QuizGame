@@ -50,14 +50,28 @@ var s,n;
 s = "";
 	for (n=1;n<=sen;n++) {
         if(n == senrand){　
-		s += "【<a href=''>" + n + "：" + result[rand][2] + "</a>】" ;
+		s += "【<a href='javascript:correct()'>" + n + "：" + result[rand][2] + "</a>】" ;
         } else{
         var rantemp = Math.floor(Math.random() * 200); //間違っている答えを表示するための乱数。ここで範囲を絞れるよ
-        s += "【<a href=''>" + n + "：" + result[rantemp][2] + "</a>】" ;
+        s += "【<a href='javascript:incorrect()'>" + n + "：" + result[rantemp][2] + "</a>】" ;
         }
 	}
 	document.getElementById("text_s").innerHTML = s;
-  //alert(result[1][2]); // 300yen
+  //alert(result[1][2]); // デバッグ用
+    
+//解答表示
+function correct() {  //正解の場合
+	var s;
+	s =  "正解！";
+    
+	document.getElementById("text_a").innerHTML = s;
+}
+
+function incorrect() { //不正解 
+	var s;
+	s =  "不正解！  正しい正解は" ;
+    
+	document.getElementById("text_a").innerHTML = s;
 }
  
 getCSV(); //最初に実行される
