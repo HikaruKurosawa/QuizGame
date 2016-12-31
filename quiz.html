@@ -8,17 +8,19 @@
 <h1>英熟語　四択クイズ</h1>
 <hr>
 <h2>問題</h2>
+<div id ="monkazu"></div>
 <div id="text_q"></div>
 <h2>選択</h2>
 <div id="text_s"></div>
 <h2>解答</h2>
 <div id="text_a"></div>
 
+    
 <script type="text/javascript">
 var count = 0; //問題数を数える    
 var sen = 4;//選択肢の数    
 var result = [];// 最終的な二次元配列を入れるための配列
-    
+var rand; //ランダムな数値。問題選び用    
 //CSVファイルを読み込む関数getCSV()の定義
 function getCSV(){
     var req = new XMLHttpRequest(); // HTTPでファイルを読み込むためのXMLHttpRrequestオブジェクトを生成
@@ -39,20 +41,26 @@ function convertCSVtoArray(str){ // 読み込んだCSVデータが文字列と�
         result[i] = tmp[i].split(',');
     }
 
-    var rand = 	Math.floor(Math.random() * 100); //ランダムな数値。問題選び用
+    rand = Math.floor(Math.random() * 100+1); //問題選び用
 
 //問題
+    document.getElementById("monkazu").innerHTML = count+1 + "問目";
 	document.getElementById("text_q").innerHTML =  result[rand][1] + "の意味は？";
     
 //選択肢
 var s,n;
-    var senrand = Math.floor(Math.random() * sen); //正解を何番目の選択肢に置くかを決める
+    var senrand = Math.floor(Math.random() * sen+1); //正解を何番目の選択肢に置くかを決める
 s = "";
 	for (n=1;n<=sen;n++) {
         if(n == senrand){　
-		s += "【<a href='javascript:correct();'>" + n + "：" + result[rand][2] + "</a>】" ;
+		s += "【<a href='javascript:correct();'>" + n + "：" + result[rand][2] + "</a>】" ; //hrefで呼ぶときにも、関数名の後に「；」をつける
         } else{
-        var rantemp = Math.floor(Math.random() * 200); //間違っている答えを表示するための乱数。ここで範囲を絞れるよ
+        var rantemp = Math.floor(Math.random() * 200+1); //間違っている答えを表示するための乱数。ここで範囲を絞れるよ
+        
+        while(rantemp == rand){
+            rantemp = Math.floor(Math.random() * 200+1);
+        }
+        
         s += "【<a href='javascript:incorrect();'>" + n + "：" + result[rantemp][2] + "</a>】" ;
         }
 	}
@@ -63,20 +71,24 @@ s = "";
 //解答表示
 function correct() {  //正解の場合
 	var sc;
-    count++;
+    count++;// 問題数を加算
     sc ="正解";
 	alert(sc);
-    //document.getElementById("text_a").innerHTML = sc;
+    document.getElementById("text_a").innerHTML = sc;
+    document.getElementById("monkazu").innerHTML = count+1 + "問目";
+    getCSV(); //次の問題 
 }
 
 function incorrect() { //不正解 
 	var sic;
-	sic =  "不正解！  正しい正解は" ;  
+    count++;　// 問題数を加算
+	sic =  "不正解！\n正解は、" + result[rand][2]+"です";  
 	alert(sic);
-    //document.getElementById("text_a").innerHTML = sic ;
+    document.getElementById("text_a").innerHTML = sic ;
+    document.getElementById("monkazu").innerHTML = count+1 + "問目";
+    getCSV(); //次の問題
+
 }
-
-
     
 getCSV(); //最初に実行される
 
