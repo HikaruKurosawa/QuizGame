@@ -30,6 +30,7 @@ function start(){ //スタートボタンを押した後
     count =0; //問題数初期化
     num_seikai = 0; //正解数初期化
     rireki ="<table border=1><tr><th>問題番号</th><th>英語</th><th>意味</th><th>結果</th></tr></table>";
+     document.getElementById("text_a").innerHTML = rireki ;
     getCSV();
 }    
 //CSVファイルを読み込む関数getCSV()の定義
@@ -108,7 +109,7 @@ function incorrect() { //不正解
     
 //getCSV(); //最初に実行される
 //quiz();
-    
+    //aaa
 //問題表示
 function quiz() {
 
