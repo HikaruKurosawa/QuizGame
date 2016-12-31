@@ -6,6 +6,7 @@
 </head>
 <body>
 <h1>英熟語　四択クイズ</h1>
+<p><input type="button" value="スタート" onClick="start()"></p>
 <hr>
 <h2>問題</h2>
 <div id ="monkazu"></div>
@@ -13,16 +14,27 @@
 <h2>選択</h2>
 <div id="text_s"></div>
 <h2>解答</h2>
-<div id="text_a"></div>
 
+    <div id="text_a"></div>
     
 <script type="text/javascript">
 var count = 0; //問題数を数える    
 var sen = 4;//選択肢の数    
 var result = [];// 最終的な二次元配列を入れるための配列
-var rand; //ランダムな数値。問題選び用    
+var rand; //ランダムな数値。問題選び用  
+var num_seikai;//正解数
+var rireki; //答えた履歴と結果
+    
+    
+function start(){ //スタートボタンを押した後
+    count =0; //問題数初期化
+    num_seikai = 0; //正解数初期化
+    rireki ="<table border=1><tr><th>問題番号</th><th>英語</th><th>意味</th><th>結果</th></tr></table>";
+    getCSV();
+}    
 //CSVファイルを読み込む関数getCSV()の定義
 function getCSV(){
+    
     var req = new XMLHttpRequest(); // HTTPでファイルを読み込むためのXMLHttpRrequestオブジェクトを生成
     req.open("get", "jukugo.csv", true); // アクセスするファイルを指定
     req.send(null); // HTTPリクエストの発行
@@ -70,11 +82,13 @@ s = "";
 
 //解答表示
 function correct() {  //正解の場合
-	var sc;
+	var sc; 
     count++;// 問題数を加算
+    rireki = rireki.replace("</table>","");
+    rireki += "<tr><th>問題" + count + "</th><th>" + result[rand][1] + "</th><th>" + result[rand][2] + "</th><th>○</th></tr></table>";
     sc ="正解";
 	alert(sc);
-    document.getElementById("text_a").innerHTML = sc;
+    document.getElementById("text_a").innerHTML = rireki;
     document.getElementById("monkazu").innerHTML = count+1 + "問目";
     getCSV(); //次の問題 
 }
@@ -82,26 +96,24 @@ function correct() {  //正解の場合
 function incorrect() { //不正解 
 	var sic;
     count++;　// 問題数を加算
+   rireki = rireki.replace("</table>","");
+    rireki += "<tr><th>問題" + count + "</th><th>" + result[rand][1] + "</th><th>" + result[rand][2] + "</th><th>×</th></tr></table>";
 	sic =  "不正解！\n正解は、" + result[rand][2]+"です";  
 	alert(sic);
-    document.getElementById("text_a").innerHTML = sic ;
+    document.getElementById("text_a").innerHTML = rireki ;
     document.getElementById("monkazu").innerHTML = count+1 + "問目";
     getCSV(); //次の問題
 
 }
     
-getCSV(); //最初に実行される
-
-
+//getCSV(); //最初に実行される
 //quiz();
     
 //問題表示
 function quiz() {
 
 }
-    
-    
+     
 </script>
 </body>
 </html>
-
