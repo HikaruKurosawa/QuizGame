@@ -2,10 +2,10 @@
 <html>
 <head>
 
-<title>三択クイズ</title>
+<title>英単語クイズ</title>
 </head>
 <body>
-<h1>英熟語　四択クイズ</h1>
+<h1>英単語クイズ</h1>
 <p><input type="button" value="スタート" onClick="start()"></p>
 <hr>
 <h2>問題</h2>
@@ -86,7 +86,7 @@ function correct() {  //正解の場合
 	var sc; 
     count++;// 問題数を加算
     rireki = rireki.replace("</table>","");
-    rireki += "<tr><th>問題" + count + "</th><th>" + result[rand][1] + "</th><th>" + result[rand][2] + "</th><th>○</th></tr></table>";
+    rireki += "<tr><th>問題" + count + "</th><th>" + "<a href='http://ejje.weblio.jp/content/"+result[rand][1]+"' target='_blank'>"+result[rand][1]+"</a>"+ "</th><th>" + result[rand][2] + "</th><th>○</th></tr></table>";
     sc ="正解";
 	alert(sc);
     document.getElementById("text_a").innerHTML = rireki;
@@ -97,8 +97,8 @@ function correct() {  //正解の場合
 function incorrect() { //不正解 
 	var sic;
     count++;　// 問題数を加算
-   rireki = rireki.replace("</table>","");
-    rireki += "<tr><th>問題" + count + "</th><th>" + result[rand][1] + "</th><th>" + result[rand][2] + "</th><th>×</th></tr></table>";
+    rireki = rireki.replace("</table>",""); //rirekiより、</table>を消す。（テーブルの追加のため）
+    rireki += "<tr><th>問題" + count + "</th><th>" + "<a href='http://ejje.weblio.jp/content/"+result[rand][1]+"' target='_blank'>"+result[rand][1]+"</a>" + "</th><th>" + result[rand][2] + "</th><th>×</th></tr></table>";//weblioに飛んで、発音確認できる
 	sic =  "不正解！\n正解は、" + result[rand][2]+"です";  
 	alert(sic);
     document.getElementById("text_a").innerHTML = rireki ;
