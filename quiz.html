@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-
+<meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, maximum-scale=1.0, user-scalable=yes">
 <title>英単語クイズ</title>
 </head>
 <body>
@@ -13,7 +13,7 @@
 <div id="text_q"></div>
 <h2>選択</h2>
 <div id="text_s"></div>
-<h2>解答</h2>
+<h2>解答　</h2>正答率：<div id="seiritu"></div>
 
     <div id="text_a"></div>
     
@@ -24,7 +24,7 @@ var result = [];// 最終的な二次元配列を入れるための配列
 var rand; //ランダムな数値。問題選び用  
 var num_seikai;//正解数
 var rireki; //答えた履歴と結果
-    
+var mon;
     
 function start(){ //スタートボタンを押した後
     count =0; //問題数初期化
@@ -37,7 +37,7 @@ function start(){ //スタートボタンを押した後
 function getCSV(){
     
     var req = new XMLHttpRequest(); // HTTPでファイルを読み込むためのXMLHttpRrequestオブジェクトを生成
-    req.open("get", "jukugo.csv", true); // アクセスするファイルを指定
+    req.open("get", "660kara.csv", true); // アクセスするファイルを指定
     req.send(null); // HTTPリクエストの発行
 	
     // レスポンスが返ってきたらconvertCSVtoArray()を呼ぶ	
@@ -57,8 +57,9 @@ function convertCSVtoArray(str){ // 読み込んだCSVデータが文字列と�
     rand = Math.floor(Math.random() * 100+1); //問題選び用
 
 //問題
+    mon = "<font size='5'>"+result[rand][1]+"</font>";
     document.getElementById("monkazu").innerHTML = count+1 + "問目";
-	document.getElementById("text_q").innerHTML =  result[rand][1] + "の意味は？";
+	document.getElementById("text_q").innerHTML =  mon + "の意味は？";
     
 //選択肢
 var s,n;
@@ -66,15 +67,15 @@ var s,n;
 s = "";
 	for (n=1;n<=sen;n++) {
         if(n == senrand){　
-		s += "【<a href='javascript:correct();'>" + n + "：" + result[rand][2] + "</a>】" ; //hrefで呼ぶときにも、関数名の後に「；」をつける
+		s += "<h3><p>【<a href='javascript:correct();'>" + n + "：" + result[rand][2] + "</a>】</p></h3>" ; //hrefで呼ぶときにも、関数名の後に「；」をつける
         } else{
-        var rantemp = Math.floor(Math.random() * 200+1); //間違っている答えを表示するための乱数。ここで範囲を絞れるよ
+        var rantemp = Math.floor(Math.random() * 100+1); //間違っている答えを表示するための乱数。ここで範囲を絞れるよ
         
         while(rantemp == rand){
-            rantemp = Math.floor(Math.random() * 200+1);
+            rantemp = Math.floor(Math.random() * 100+1);
         }
         
-        s += "【<a href='javascript:incorrect();'>" + n + "：" + result[rantemp][2] + "</a>】" ;
+        s += "<h3><p>【<a href='javascript:incorrect();'>" + n + "：" + result[rantemp][2] + "</a>】</p></h3>" ;
         }
 	}
 	document.getElementById("text_s").innerHTML = s;
@@ -85,10 +86,13 @@ s = "";
 function correct() {  //正解の場合
 	var sc; 
     count++;// 問題数を加算
+    num_seikai++;
+    
     rireki = rireki.replace("</table>","");
     rireki += "<tr><th>問題" + count + "</th><th>" + "<a href='http://ejje.weblio.jp/content/"+result[rand][1]+"' target='_blank'>"+result[rand][1]+"</a>"+ "</th><th>" + result[rand][2] + "</th><th>○</th></tr></table>";
     sc ="正解";
 	alert(sc);
+   document.getElementById("seiritu").innerHTML = Math.round(num_seikai / count * 10000 )/100+ "%";//第２位までにするため、10000をかけて100で割っている
     document.getElementById("text_a").innerHTML = rireki;
     document.getElementById("monkazu").innerHTML = count+1 + "問目";
     getCSV(); //次の問題 
@@ -101,6 +105,7 @@ function incorrect() { //不正解
     rireki += "<tr><th>問題" + count + "</th><th>" + "<a href='http://ejje.weblio.jp/content/"+result[rand][1]+"' target='_blank'>"+result[rand][1]+"</a>" + "</th><th>" + result[rand][2] + "</th><th>×</th></tr></table>";//weblioに飛んで、発音確認できる
 	sic =  "不正解！\n正解は、" + result[rand][2]+"です";  
 	alert(sic);
+    document.getElementById("seiritu").innerHTML = Math.round(num_seikai/count*10000)/100+"%";
     document.getElementById("text_a").innerHTML = rireki ;
     document.getElementById("monkazu").innerHTML = count+1 + "問目";
     getCSV(); //次の問題
