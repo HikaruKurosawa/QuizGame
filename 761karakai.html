@@ -1,0 +1,152 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, maximum-scale=1.0, user-scalable=yes">
+<title>英単語クイズ</title>
+</head>
+<body>
+<h1>英単語クイズ</h1>
+<p><input type="button" value="スタート" onClick="start()"></p>
+<hr>
+<h2>問題</h2>
+<div id ="monkazu"></div>
+<div id="text_q"></div>
+<h2>選択</h2>
+    <div id="text_s"></div>
+<h2>解答　</h2>正答率：<div id="seiritu"></div>
+
+    <div id="text_a"></div>
+    
+<script type="text/javascript">
+var count = 0; //問題数を数える    
+var sen = 4;//選択肢の数    
+var result = [];// 最終的な二次元配列を入れるための配列
+var rand; //ランダムな数値。問題選び用  
+var num_seikai;//正解数
+var rireki; //答えた履歴と結果
+var mon;
+var sel_mon=[];//既に選ばれた問題番号を格納
+var num_mon　=20;//問題数はここで設定。そのうちセレクトボックスで選べるようにする
+    
+function start(){ //スタートボタンを押した後の関数
+    count =1; //問題数初期化
+    num_seikai = 0; //正解数初期化
+    rireki ="<table border=1><tr><th>問題番号</th><th>英語</th><th>意味</th><th>結果</th></tr></table>";
+     document.getElementById("text_a").innerHTML = rireki ;
+    getCSV();
+}    
+
+    function getCSV(){ //CSVファイルを読み込む関数getCSV()の定義
+        var req = new XMLHttpRequest(); // HTTPでファイルを読み込むためのXMLHttpRrequestオブジェクトを生成
+        req.open("get", "761kara.csv", true); // アクセスするファイルを指定
+        req.send(null); // HTTPリクエストの発行
+	
+    // レスポンスが返ってきたらconvertCSVtoArray()を呼ぶ	
+    req.onload = function(){
+	convertCSVtoArray(req.responseText); // 渡されるのは読み込んだCSVデータ
+    }
+}
+ 
+// 読み込んだCSVデータを二次元配列に変換する関数convertCSVtoArray()の定義
+    function convertCSVtoArray(str){ // 読み込んだCSVデータが文字列として渡される
+        var tmp = str.split("\n"); // 改行を区切り文字として行を要素とした配列を生成
+        // 各行ごとにカンマで区切った文字列を要素とした二次元配列を生成
+        for(var i=0;i<tmp.length;++i){
+        result[i+1] = tmp[i].split(',');//配列の要素は[1]から格納されている。
+    }
+
+    //rand = Math.floor(Math.random() * 10+1); //問題選び用ここの数値をいじると、問題の範囲を選択できる
+    //sel_mon[count] = rand;        
+
+//問題用の乱数を生成し配列へ格納
+    if(count==1){
+        
+    for (i = 1;i<num_mon;i++){
+    sel_mon[i]=i;
+    }   
+        
+    for(i = num_mon - 1 ; i>0;i--){ //繰り返し数は１少なくなる
+    var k = Math.floor(Math.random() * (i))+1;
+    var tmp = sel_mon[i];
+    sel_mon[i] = sel_mon[k];
+    sel_mon[k] = tmp;
+}
+    }
+        
+//問題
+    mon = "<font size='5'>"+result[sel_mon[count]][1]+"</font>";//問題になる単語をmonに格納する
+    document.getElementById("monkazu").innerHTML = count + "問目";
+	document.getElementById("text_q").innerHTML =  mon + "の意味は？";
+    
+//選択肢
+var s,n;
+    var senrand = Math.floor(Math.random() * sen+1); //正解を何番目の選択肢に置くかを決める
+s = "";
+	for (n=1;n<=sen;n++) {
+        if(n == senrand){　
+		s += "<h3><p>【<a href='javascript:correct();'>" + n + "：" + result[sel_mon[count]][2] + "</a>】</p></h3>" ; //正解を表示する。hrefで呼ぶときにも、関数名の後に「；」をつける
+        } else{
+        var rantemp = Math.floor(Math.random() * 99+1); //間違っている答えを表示するための乱数。ここで範囲を絞れる。99の場合は1~99まで
+        
+        while(rantemp == sel_mon[count]){
+            rantemp = Math.floor(Math.random() * 99+1);
+        }
+        
+        s += "<h3><p>【<a href='javascript:incorrect();'>" + n + "：" + result[rantemp][2] + "</a>】</p></h3>" ;
+        }
+	}
+	document.getElementById("text_s").innerHTML = s;
+  //alert(result[1][2]); // デバッグ用
+}
+
+//解答表示
+function correct() {  //正解の場合
+	var sc; 
+    
+    num_seikai++;
+    
+    rireki = rireki.replace("</table>","");
+    rireki += "<tr><th>問題" + count + "</th><th>" + "<a href='http://ejje.weblio.jp/content/"+result[sel_mon[count]][1]+"' target='_blank'>"+result[sel_mon[count]][1]+"</a>"+ "</th><th>" + result[sel_mon[count]][2] + "</th><th>○</th></tr></table>";
+    sc ="正解";
+	alert(sc);
+   document.getElementById("seiritu").innerHTML = Math.round(num_seikai / count * 10000 )/100+ "%";//第２位までにするため、10000をかけて100で割っている
+    document.getElementById("text_a").innerHTML = rireki;
+    count++;// 問題数を加算
+    document.getElementById("monkazu").innerHTML = count + "問目";
+    getCSV(); //次の問題 
+}
+
+function incorrect() { //不正解 
+	var sic;
+   
+    rireki = rireki.replace("</table>",""); //rirekiより、</table>を消す。（テーブルの追加のため）
+    rireki += "<tr><th>問題" + count + "</th><th>" + "<a href='http://ejje.weblio.jp/content/"+result[sel_mon[count]][1]+"' target='_blank'>"+result[sel_mon[count]][1]+"</a>" + "</th><th>" + result[sel_mon[count]][2] + "</th><th>×</th></tr></table>";//weblioに飛んで、発音確認できる
+	sic =  "不正解！\n正解は、" + result[sel_mon[count]][2]+"です";  
+	alert(sic);
+    document.getElementById("seiritu").innerHTML = Math.round(num_seikai/count*10000)/100+"%";
+    document.getElementById("text_a").innerHTML = rireki ;
+    count++;　// 問題数を加算
+    document.getElementById("monkazu").innerHTML = count + "問目";
+    getCSV(); //次の問題
+
+}
+
+/*
+これからすべきこと
+・全問やったあとの処理
+・問題数選択
+・英→日について
+・現状では1~20しか出ないので、全範囲から20個分取り出すようにする（１～１００のランダム重複なし配列を作って、その中から２０個取り出す）
+    
+//getCSV(); //最初に実行される
+//quiz();
+    //aaafasdfa
+//問題表示
+function quiz() {
+
+}
+     
+</script>
+</body>
+</html>
